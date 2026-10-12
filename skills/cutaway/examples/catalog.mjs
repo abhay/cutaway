@@ -1,0 +1,38 @@
+export const examples = {
+  "token-bucket": {
+    number: "01", title: "Token bucket", subtitle: "Token bucket · a request dispenser", palette: "ember",
+    glowMeaning: "Glow marks stored tokens and a ready gate. A request needs 1 whole token.",
+    description: "The dispenser stores up to 10 tokens. Each accepted request spends 1 token, and the clock adds 2 tokens per second.",
+    lesson: "Stored tokens let several requests pass at once. The refill rate limits sustained traffic.",
+    experiment: "Send a burst of 11: 10 requests pass and 1 is rejected. Advance 1 second, then send 2 requests; both pass. Another request will be rejected until a full token refills.",
+    assumptions: "The bucket starts full and the clock starts paused. Refill is continuous, requests cost 1 whole token, and rejected requests are dropped.",
+    prompt: "Explain a token bucket rate limiter as a mechanical token dispenser. Use a capacity of 10, a refill rate of 2 tokens per second, and a cost of 1 token per request. Add a burst of 11, a paused clock with 1-second steps, live accepted/rejected totals, and a standalone HTML file.",
+  },
+  "lru-cache": {
+    number: "02", title: "LRU cache", subtitle: "LRU cache · a 3-drawer cabinet", palette: "signal",
+    glowMeaning: "Glow marks the most recently requested part. The other cached parts stay visible.",
+    description: "The cabinet holds 3 keys in order of use. A request moves its key to the front; a miss in a full cabinet evicts the least recently used key.",
+    lesson: "A cache hit moves an existing key to the front. This changes which key the next miss will evict.",
+    experiment: "Request A, B, C, A, then D. The second A is a hit; D evicts B. The final order is D, A, C from most to least recent.",
+    assumptions: "The cache starts empty and holds 3 equal-size entries, with exact LRU ordering and immediate loads on misses. The model omits expiration and write policies.",
+    prompt: "Make an interactive 3-entry LRU cache as a mechanical parts cabinet. Request keys A through D, show hits and misses, order drawers by recency, and identify the evicted key. Include the experiment A, B, C, A, D. Deliver standalone HTML and a static SVG.",
+  },
+  "connection-pool": {
+    number: "03", title: "Connection pool", subtitle: "Connection pool · a shared tool rack", palette: "cyan",
+    glowMeaning: "Glow marks borrowed tools and their running jobs. Queued jobs wait without glowing.",
+    description: "3 tools represent reusable connections. Each job borrows a tool for 3 seconds, and up to 4 jobs can wait in a first-in, first-out queue.",
+    lesson: "The pool limits how many jobs can run at once. Additional jobs wait in the queue; once it fills, the model rejects new requests.",
+    experiment: "Submit 8 jobs without advancing time: 3 run, 4 wait, and 1 is rejected. Advance 3 seconds to return the first 3 tools and start jobs 4, 5, and 6.",
+    assumptions: "The model has 3 connections, 3-second jobs, and 4 FIFO waiting places, with the clock paused at the start. You can return tools early. It omits timeouts, connection setup costs, and failures.",
+    prompt: "Explain a connection pool as a rack of 3 reusable tools. Jobs take 3 seconds, 4 jobs can wait FIFO, and excess requests are rejected. Add manual return controls, a 1-second clock step, and job IDs so I can follow handoffs. Deliver standalone HTML.",
+  },
+  "circuit-breaker": {
+    number: "04", title: "Circuit breaker", subtitle: "Circuit breaker · a safety relay", palette: "tungsten",
+    glowMeaning: "The bridge glows when closed or carrying a trial request. Raised glowing pins count consecutive failures.",
+    description: "The relay stops traffic after 3 consecutive failures. After a 5-second cooldown, it allows 1 trial request to check whether the service has recovered.",
+    lesson: "The half-open breaker allows 1 trial request and rejects other requests while the result is pending. A successful trial closes the relay; a failure opens it again.",
+    experiment: "Fail the downstream service and send 3 requests to open the relay. Advance 5 seconds, restore the service, send a trial, and resolve it to close the relay.",
+    assumptions: "3 consecutive failures trip the breaker for 5 seconds; any success resets the failure streak. Ordinary requests resolve immediately, while you choose when to resolve the half-open trial request. The clock starts paused.",
+    prompt: "Build a circuit breaker as an isometric safety relay. Trip after 3 consecutive failures, cool down for 5 seconds, then allow 1 half-open probe. Let me fail or restore the downstream service and resolve the probe separately. Deliver standalone HTML with state and rejection readouts.",
+  },
+};

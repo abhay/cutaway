@@ -1,0 +1,4 @@
+interface:
+  display_name: "Cutaway"
+  short_description: "Learn how machines work with interactive cutaways"
+  default_prompt: "Use $cutaway to show how an espresso machine pumps and heats water, with an interactive cutaway."

@@ -1,0 +1,20 @@
+{
+  "name": "cutaway-chatgpt-plugin",
+  "version": "0.2.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "bun scripts/check.mjs",
+    "test": "bun test ./tests",
+    "package": "bun scripts/package.mjs",
+    "release": "bun scripts/release.mjs",
+    "examples": "bun skills/cutaway/examples/build.mjs all dist/examples --both",
+    "hardware": "bun scripts/build-hardware.mjs",
+    "check:browser": "bun scripts/browser-check.mjs",
+    "check:dom": "bun scripts/dom-check.mjs",
+    "check:hardware": "bun scripts/hardware-dom-check.mjs",
+    "build:site": "bun run release && bun scripts/build-site.mjs",
+    "preview:site": "bun scripts/serve-site.mjs",
+    "check:site": "bun scripts/site-check.mjs"
+  }
+}

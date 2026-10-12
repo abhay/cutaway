@@ -1,0 +1,31 @@
+{
+  "repository": "https://github.com/wheresryan22/anatomy",
+  "ref": "main",
+  "commit": null,
+  "retrieved": "2026-10-11",
+  "files": {
+    "LICENSE": "1d415c2fa01d5c64a4045e81a120df85170000796b624971975838e9f7f2b1ce",
+    "examples/desk-computer/build.mjs": "bfeba9d1943b0ca28ef9867da3483db6ccf4850e022bae6e03ec2c8072506e92",
+    "examples/dial-indicator/build.mjs": "9a89224adacd94b4fcb5fe1a7b32a82e9a647200d1b295b670f606ceac6804cd",
+    "kit/audit.mjs": "93bc1e1899f555970cb4e623f4432db8cfd537346083b1f8dd0c8652d69feb6e",
+    "kit/gl.mjs": "c7c1aba50af022a91c6d767ed6d488f8d68a040893960d3285c19785c57e373a",
+    "kit/iso-kit.mjs": "6d3ecc725d30c3b0346da309cf61dfa5a65017c23620bbd4093009d4fb104018",
+    "kit/iso-kit.ts": "670b2554e40f42ce3eecdbe4c4672cba1d166dc478d798499175dd8c83b1ae83",
+    "kit/iso.css": "ef19bac5a42ba9be42b56b2c1cf7fc7e21d332a8060765e9ca1d987b8ab23924",
+    "kit/lathe.mjs": "61cdd2bc84569d129aba1d7d9afc103a078140c0eff3cc6e46a357e3d7dbd16c",
+    "kit/react/draw.tsx": "ba7415a29aea00fcd8a119e43884835c95eda897069479f091b8ca4a4d593e19",
+    "kit/react/live.tsx": "c957f1fdf50f938fa65164d21e707d8ed3b29ce6f1f425dc576a64ddfd505dcd",
+    "kit/tube.mjs": "b30948c85cba6b44d316143cb6dedc59d29e0155161e21e4c4e01b69d5f349f3",
+    "kit/turn-audit.mjs": "c117865c8e9eafb98c14cbcf36df1c4d881f5ca3e39e68776fe55de0efc3d1cb",
+    "kit/turn-build.mjs": "cd8c76fc1716e85367f18c02ae96ed82154a116e0868125b254a981ecc87467a",
+    "kit/turn.mjs": "5c9cfe8e00d182124644a97c4c02a449ab84476f1663e86f6e15b8ff405f1d8e",
+    "references/3d.md": "decb414dc1321b89f3e49f31cba1228140b7ccec2f4d7ebfe01267bc040e296f",
+    "references/craft.md": "0f1304711e657fc288e46151fd2312b77bda9a30ec6a63eb54ff3bf072350817",
+    "references/kit.md": "1680ffd9150e6e58724839e32bb11f3931300953d32976e7f1053b0e4f8459be",
+    "references/motion.md": "6dd4eedf1fa6cf3bc678b1bfa217afa5eaa6e7d766fb8f4999e3e1e8dec1ea8d",
+    "references/react.md": "b59c1a349e9be135d3cdfbfa2c1af6c8c4075a696633cc2514b30f0116d743e8",
+    "references/verify.md": "fa88cf5e5d9c1f8419274d16ce920740c113c9bf5aec0c42fb4efa011d50f3e7",
+    "references/webgl.md": "c3c0c26dcfc466058a07a4279c9ee18b09d9c9ea000ae561cf7d199d0670a3cc",
+    "scripts/inline-kit.mjs": "11214b4475829ef87eb9e9bad54225fbc210eb0024823d694216b651659172e9"
+  }
+}
