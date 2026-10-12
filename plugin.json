@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "cutaway",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Learn how engines, wings, and machines work with interactive cutaways. Built for ChatGPT using Ryan's /anatomy toolkit.",
   "license": "MIT",
   "keywords": [
@@ -16,17 +16,21 @@
     "com.openai": {
       "interface": {
         "displayName": "Cutaway",
-        "shortDescription": "/anatomy, adapted for ChatGPT",
-        "longDescription": "Look inside a GE9X jet engine, follow water through an espresso machine, compare wing designs, or watch the pistons in a boxer engine. Ask for labels, controls, and explanations of the parts.\n\nCutaway uses the file and code tools in your ChatGPT session to produce self-contained HTML, SVG drawings, or editable source, without a separate API key. These are teaching models, with simplified shapes, timing, and flow.\n\nThe drawing toolkit comes from Ryan's (@wheresryan22) MIT-licensed /anatomy. Optional glow and palettes come from April Zhu's iso-glow, based on Tolga Cohce's iso-figure. Cutaway adapts their work for ChatGPT and keeps the upstream licenses.",
-        "category": "Productivity",
+        "shortDescription": "Learn how machines work",
+        "longDescription": "Look inside a GE9X jet engine, follow water through an espresso machine, compare wing designs, or watch the pistons in a boxer engine. Select parts, move the controls, and download the view as HTML or SVG. Each model includes explanations, sources, and its simplifications.\n\nThe hosted tools open these models inside ChatGPT. The bundled drawing skill can create other machines using your session’s file and code tools. You don’t need a separate API key or Cutaway account.\n\nThe drawing toolkit comes from Ryan’s (@wheresryan22) MIT-licensed /anatomy. Optional glow and palettes come from April Zhu’s iso-glow, based on Tolga Cohce’s iso-figure. Cutaway adapts their work for ChatGPT and keeps the upstream licenses.",
+        "category": "Education & Research",
+        "websiteURL": "https://cutaway.abhay.gg/",
+        "supportURL": "https://cutaway.abhay.gg/support/",
+        "privacyPolicyURL": "https://cutaway.abhay.gg/privacy/",
+        "termsOfServiceURL": "https://cutaway.abhay.gg/terms/",
         "logo": "./assets/icon.svg",
         "logoDark": "./assets/icon-dark.svg",
         "composerIcon": "./assets/icon.svg",
         "composerIconDark": "./assets/icon-dark.svg",
         "defaultPrompt": [
-          "Build a GE9X cutaway using GE Aerospace references. Show its components, core and bypass airflow, and simplifications.",
-          "Build an interactive boxer engine cutaway. Show opposing pistons, connecting rods, and their separate crankpins.",
-          "Build a cutaway espresso machine with a pump, boiler, group head, and moving water."
+          "Show the GE9X compressor and explain how its turbine drives it.",
+          "Open the wing cutaway with the flaps at 25 degrees and the slat extended.",
+          "Open the espresso machine while brewing and highlight the pump."
         ]
       }
     }

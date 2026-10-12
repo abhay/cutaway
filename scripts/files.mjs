@@ -10,7 +10,7 @@ export function filesBelow(root, prefix = "") {
 }
 
 export function packageFiles(root) {
-  return ["plugin.json", "README.md", "LICENSE", "THIRD_PARTY.md", "upstream-files.json",
+  return ["plugin.json", "mcp.json", "README.md", "LICENSE", "THIRD_PARTY.md", "upstream-files.json",
     ...filesBelow(join(root, "assets")).map((path) => `assets/${path}`),
     ...filesBelow(join(root, "skills")).filter((path) => !path.endsWith(".html")).map((path) => `skills/${path}`),
   ].sort();

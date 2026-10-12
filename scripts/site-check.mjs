@@ -9,6 +9,29 @@ const { JSDOM, ResourceLoader, VirtualConsole } = require(process.env.CUTAWAY_JS
 const root = resolve(import.meta.dir, "..");
 const output = join(root, "dist/site");
 const html = readFileSync(join(output, "index.html"), "utf8");
+const listing = JSON.parse(readFileSync(join(root, "plugin.json"), "utf8")).extensions["com.openai"].interface;
+function checkLinks(document, baseURL) {
+  for (const element of document.querySelectorAll("[href], [src]")) {
+    const target = element.getAttribute("href") ?? element.getAttribute("src");
+    const url = new URL(target, baseURL);
+    if (url.origin !== new URL(baseURL).origin) continue;
+    const path = url.pathname.endsWith("/") ? `${url.pathname}index.html` : url.pathname;
+    assert(existsSync(join(output, path)), `Published local target exists: ${target}`);
+    if (url.hash && url.pathname === new URL(baseURL).pathname) assert(document.getElementById(url.hash.slice(1)), `Anchor exists: ${target}`);
+  }
+}
+for (const field of ["supportURL", "privacyPolicyURL", "termsOfServiceURL"]) {
+  const url = new URL(listing[field]);
+  assert.equal(url.origin, new URL(listing.websiteURL).origin, `${field} uses the Cutaway website`);
+  const path = url.pathname.endsWith("/") ? `${url.pathname}index.html` : url.pathname;
+  const page = new JSDOM(readFileSync(join(output, path), "utf8"), { url: url.href });
+  try {
+    assert(page.window.document.querySelector("main h1"), `${field} opens a complete page`);
+    checkLinks(page.window.document, url.href);
+  } finally {
+    page.window.close();
+  }
+}
 const requests = [], errors = [];
 const console = new VirtualConsole();
 console.on("jsdomError", (error) => errors.push(error.message));
@@ -34,14 +57,7 @@ try {
   assert.equal(doc.querySelectorAll("[data-interactive][hidden]").length, 0, "Interactive controls become available");
   const ids = [...doc.querySelectorAll("[id]")].map((element) => element.id);
   assert.equal(ids.length, new Set(ids).size, "Inline SVG and page IDs are unique");
-  for (const element of doc.querySelectorAll("[href], [src]")) {
-    const target = element.getAttribute("href") ?? element.getAttribute("src");
-    const url = new URL(target, dom.window.location.href);
-    if (url.origin !== dom.window.location.origin) continue;
-    const path = url.pathname.endsWith("/") ? `${url.pathname}index.html` : url.pathname;
-    assert(existsSync(join(output, path)), `Published local target exists: ${target}`);
-    if (url.hash && url.pathname === "/") assert(doc.getElementById(url.hash.slice(1)), `Anchor exists: ${target}`);
-  }
+  checkLinks(doc, dom.window.location.href);
   const content = (id) => doc.getElementById(id).textContent;
   const copy = doc.querySelector("[data-copy]");
   const topic = doc.getElementById("prompt-topic");
@@ -63,7 +79,7 @@ try {
   assert(requests.length > 0, "The page loaded its bundled script");
   for (const path of filesBelow(output)) assert(!/(?:\.mov$|\.DS_Store|anatomy\.png|isoglow\.png|iso-glow\.zip|HANDOFF|\.env|\.git\/)/.test(path), `Private/reference input excluded: ${path}`);
   const report = {
-    checks: ["Demo links, hero iframe target and downloads resolve", "Unique page IDs", "Subject selection changes the prompt", "Clipboard success and denied-access fallback", "Local resource loading", "No runtime errors", "Reference inputs excluded"],
+    checks: ["Demo links, hero iframe target and downloads resolve", "Support and policy URLs resolve to complete pages with working local links", "Unique page IDs", "Subject selection changes the prompt", "Clipboard success and denied-access fallback", "Local resource loading", "No runtime errors", "Reference inputs excluded"],
     limitations: ["DOM checks don't cover layout, native keyboard behavior, or browser SVG filters", "Demo runtimes have separate model and DOM checks; this check doesn't run the iframe"],
   };
   mkdirSync(join(root, "dist/verification"), { recursive: true });

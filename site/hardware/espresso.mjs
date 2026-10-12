@@ -1,14 +1,13 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { stages, parts, espressoFrame, espressoBase as BASE, espressoProjection as P } from "./espresso-model.mjs";
 import * as k from "../../skills/cutaway/upstream/kit/iso-kit.mjs";
 import * as g from "../../skills/cutaway/upstream/kit/lathe.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const WIDTH = 900;
 const HEIGHT = 650;
-const BASE = { x: -125, y: -69, w: 259, d: 170, r: 9 };
-const P = k.fitProjection(k.boxCorners(BASE, -10, 171), WIDTH, HEIGHT, { pad: 48, azimuth: 55, elevation: 27 });
 const PAINT = {
   steel: { fill: "#343e3c", top: "#67746d", edge: "#9ca99e", shades: ["#2d3634", "#394540", "#47564e", "#58665c"] },
   dark: { fill: "#222b26", top: "#414c40", edge: "#667361", shades: ["#202923", "#273329", "#303d31", "#374739"] },
@@ -61,7 +60,7 @@ function machine() {
   const tank = { x: -102, y: -48, w: 46, d: 64, r: 4 };
   const tankShape = k.slabOf(tank, 18, 111, P, 8);
   art.push(`<path d="${tankShape.fill}" fill="#9fb9ac" opacity=".08"/>`);
-  art.push(`<g data-reservoir-water=""><path d="${k.slabOf(k.insetPlan(tank, 2), 19, 86, P, 8).fill}" fill="#7eccc4" opacity=".23"/><path d="${k.planOutline(k.insetPlan(tank, 2), 105, P)}" fill="#9cddd3" opacity=".28"/></g>`);
+  art.push(`<g data-reservoir-water=""><path data-reservoir-fill="" d="${k.slabOf(k.insetPlan(tank, 2), 19, 86, P, 8).fill}" fill="#7eccc4" opacity=".23"/><path data-reservoir-surface="" d="${k.planOutline(k.insetPlan(tank, 2), 105, P)}" fill="#9cddd3" opacity=".28"/></g>`);
   art.push(line(tankShape.outline, "#87a397", 1.2), line(tankShape.crease, "#a8bcad", .8));
   for (const z of [40, 58, 76, 94, 112]) art.push(line(path([[-64, 16.2, z], [-58, 16.2, z]]), "#bed1bf", .9));
   art.push(slab(-104, -50, 50, 68, 129, 4, "dark", 3));
@@ -162,7 +161,7 @@ const CSS = `
 :root{color-scheme:dark;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#e8eadc;background:#141a15;font-synthesis:none}*{box-sizing:border-box}body{margin:0}main{max-width:1030px;margin:auto;padding:36px 36px 30px}h1,h2,p{margin:0}header{margin-bottom:22px}h1{font-size:clamp(26px,5vw,39px);line-height:1.15;font-weight:500;letter-spacing:-1.3px}header p:last-child{max-width:640px;color:#b6bdaa;font-size:14px;line-height:1.7;margin-top:14px}.drawing{position:relative;border:1px solid #354132;border-radius:8px;overflow:hidden;background:#141a15}.drawing svg{display:block;width:100%;height:auto}.drawing-label{position:absolute;left:22px;top:18px;font:10px ui-monospace,monospace;letter-spacing:1.2px;text-transform:uppercase;color:#bac5b3}.cut-note{position:absolute;right:20px;bottom:18px;font:10px ui-monospace,monospace;color:#b3bca9}.controls{border:1px solid #354132;border-top:0;border-radius:0 0 8px 8px;padding:20px}.controls-row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}button,select{font:12px system-ui,sans-serif;min-height:40px;border:1px solid #58644c;border-radius:4px;padding:9px 13px;background:#1c251d;color:#e9eddb}button{cursor:pointer}button:hover,select:hover{border-color:#d7bc88}button:focus-visible,select:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid #eed09a;outline-offset:4px}button:first-child{background:#e8d1a2;color:#202a1d;border-color:#e8d1a2}label{font-size:11px;color:#bdc5b3}.stage-control{display:flex;align-items:center;gap:10px;margin-left:auto}select{max-width:145px}input[type=range]{width:100%;accent-color:#e4c98f;margin:13px 0 0;min-height:28px}.scrub-label{display:flex;justify-content:space-between;gap:18px;margin-top:16px;font:10px ui-monospace,monospace;color:#b9c3ae}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;border-top:1px solid #34412f;padding:16px 0 0;margin:13px 0 0}.metrics div+div{border-left:1px solid #34412f;padding-left:18px}.metrics dt{font:9px ui-monospace,monospace;text-transform:uppercase;letter-spacing:1.1px;color:#b3bfa6}.metrics dd{font-size:15px;color:#e4e9d7;margin:7px 0 0}.caption{font-size:13px;color:#bdc7b1;line-height:1.6;margin-top:16px;min-height:42px}.parts{display:flex;flex-wrap:wrap;gap:7px;margin-top:19px}.parts button,.parts button:first-child{font-size:11px;min-height:35px;background:transparent;color:#becab3;border-color:#3b4933;padding:7px 10px}.parts button[aria-pressed=true]{border-color:#d8b57f;color:#ecd4a9;background:#e6c28712}.part-description{font-size:13px;line-height:1.7;color:#c6cebd;padding:14px 0 0;min-height:59px}.notes{border-top:1px solid #354132;margin-top:24px;padding-top:20px;display:grid;grid-template-columns:1fr 1fr;gap:26px}.notes h2{font-size:13px;font-weight:550;color:#e2e7d6;margin-bottom:9px}.notes p,.notes li{font-size:12px;line-height:1.8;color:#b7c1ac}.notes ul{padding-left:18px;margin:0}.notes a,footer a{color:#e1c798;text-underline-offset:3px}footer{margin-top:22px;font-size:10px;line-height:1.8;color:#a9b59d}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}[data-selected=true]{filter:drop-shadow(0 0 6px #f2c27755)}.embed main{padding:0;max-width:none}.embed header,.embed .notes,.embed footer,.embed .parts,.embed .part-description{display:none}.embed .drawing{border:0;border-radius:0}.embed .controls{border:0;border-top:1px solid #34412f;border-radius:0;padding:15px 21px 18px}.embed .drawing svg{max-height:370px}.embed .drawing-label{font-size:9px;left:21px;top:17px}.embed .cut-note{font-size:8px;right:17px;bottom:12px}.embed .controls-row{gap:7px}.embed button,.embed select{font-size:10px;padding:8px 10px;min-height:36px}.embed .stage-control>label{display:none}.embed .metrics{padding-top:12px}.embed .metrics dd{font-size:13px}.embed .caption{font-size:11px;min-height:34px;margin-top:13px}.embed .scrub-label{margin-top:12px;font-size:9px}.embed input[type=range]{margin-top:5px;min-height:22px}.embed .metrics dt{font-size:8px;letter-spacing:.7px}@media(max-width:560px){main{padding:22px 17px}.controls{padding:17px}.stage-control{margin-left:0;flex:1;justify-content:flex-end}.stage-control label{display:none}.controls-row{gap:7px}.controls-row button{padding:9px 10px;font-size:11px}.notes{grid-template-columns:1fr;gap:20px}.drawing-label{font-size:8px;left:14px;top:13px}.cut-note{font-size:8px;right:13px;bottom:12px}.caption{min-height:62px}.metrics dd{font-size:13px}.metrics div+div{padding-left:13px}.embed .controls{padding:13px 15px}.embed .controls-row button{font-size:10px}.embed .caption{min-height:49px}.embed select{max-width:105px}.embed .drawing svg{max-height:320px}}@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important}[data-selected=true]{filter:none}}
 `;
 
-function runtime(projection) {
+function runtime(projection, stages, parts, frameState) {
   if (new URLSearchParams(location.search).get("embed") === "1") document.documentElement.classList.add("embed");
   const root = document.querySelector("main");
   const art = root.querySelector("svg");
@@ -172,20 +171,6 @@ function runtime(projection) {
   const caption = root.querySelector("[data-caption]");
   const live = root.querySelector("[data-announcement]");
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const stages = [
-    { at: 0, end: 1, name: "Cold", pump: "Off", heater: "Off", valve: "To drain", text: "The reservoir and brew boiler are already full. The pump is off, and the valve closes the boiler outlet while connecting the group to the drip tray." },
-    { at: 1, end: 7, name: "Heating", pump: "Off", heater: "On", valve: "To drain", text: "The element heats water inside the brew boiler while the pump stays off." },
-    { at: 7, end: 9, name: "Ready", pump: "Off", heater: "Holding", valve: "To drain", text: "The boiler has reached its target temperature. The temperature control keeps the boiler hot. Water hasn’t reached the coffee yet." },
-    { at: 9, end: 20, name: "Brewing", pump: "On", heater: "Holding", valve: "To group", text: "The pump pushes water into the full boiler, displacing hot water through the open brew valve, shower screen and coffee puck. Espresso collects in the cup." },
-    { at: 20, end: 22, name: "Finished", pump: "Off", heater: "Holding", valve: "To drain", text: "The pump stops. The three-way valve closes the boiler path and connects the group to the drip tray, releasing pressure above the coffee puck." },
-  ];
-  const parts = {
-    reservoir: "The reservoir supplies water to the pump. Its level falls as water reaches the cup.",
-    pump: "The pump draws water from the reservoir and pushes it through the brew circuit. Resistance from the coffee puck helps pressure build. The heater warms the water, and the pump supplies the brewing pressure.",
-    boiler: "The brew boiler holds water around an electric heating element. Incoming water replaces water leaving for the group, so the boiler stays full.",
-    valve: "The three-way valve connects the boiler to the group while brewing. At the end, it blocks the boiler and connects the group to the drain.",
-    group: "The group spreads water across the coffee. The portafilter holds the filter basket and coffee puck underneath it.",
-  };
   let time = 0;
   let running = false;
   let frame = 0;
@@ -193,40 +178,15 @@ function runtime(projection) {
   let inView = true;
   let currentStage = "";
   let observer;
-  const projected = ([x, y, z]) => {
-    const azimuth = projection.azimuth * Math.PI / 180;
-    const elevation = projection.elevation * Math.PI / 180;
-    const scale = projection.scale * Math.sqrt(1.6);
-    return [projection.origin[0] + (x * Math.sin(azimuth) - y * Math.cos(azimuth)) * scale, projection.origin[1] + ((x * Math.cos(azimuth) + y * Math.sin(azimuth)) * Math.sin(elevation) - z * Math.cos(elevation)) * scale];
-  };
-  const polygon = (points) => points.map((point, index) => `${index ? "L" : "M"}${projected(point).map((value) => value.toFixed(2)).join(" ")}`).join("") + "Z";
-  const setOpacity = (selector, opacity) => root.querySelectorAll(selector).forEach((element) => element.setAttribute("opacity", opacity));
   const stageAt = () => stages.find((stage) => time < stage.end) || stages.at(-1);
 
   function paint(announce = false) {
     const stage = stageAt();
-    const brewing = stage.name === "Brewing";
-    const heating = stage.name === "Heating";
-    const delivered = Math.max(0, Math.min(1, (time - 9) / 11));
-    const warm = time >= 7;
-    const level = 105 - delivered * 7;
-    const tank = root.querySelector("[data-reservoir-water]");
-    tank.children[0].setAttribute("d", polygon([[-100, -46, 19], [-58, -46, 19], [-58, 14, 19], [-100, 14, 19]]) + polygon([[-100, -46, level], [-58, -46, level], [-58, 14, level], [-100, 14, level]]) + polygon([[-58, -46, 19], [-58, 14, 19], [-58, 14, level], [-58, -46, level]]) + polygon([[-100, 14, 19], [-58, 14, 19], [-58, 14, level], [-100, 14, level]]));
-    tank.children[1].setAttribute("d", polygon([[-100, -46, level], [-58, -46, level], [-58, 14, level], [-100, 14, level]]));
-    setOpacity("[data-heater-glow]", heating ? .85 : 0);
-    root.querySelector("[data-heater]").setAttribute("stroke", heating ? "#f3be75" : warm ? "#c69560" : "#ae8355");
-    root.querySelector("[data-boiler-water]").setAttribute("fill", warm || heating ? "#edbb78" : "#7acbc0");
-    root.querySelector("[data-ready-light]").setAttribute("fill", warm ? "#d8d898" : "#717866");
-    setOpacity("[data-pump-light]", brewing ? .8 : 0);
-    setOpacity("[data-coffee-stream], [data-coffee-dashes]", brewing ? 1 : 0);
-    setOpacity("[data-cup-coffee]", delivered > 0 ? .35 + delivered * .65 : 0);
-    const draining = stage.name === "Finished" && time < 20.8;
-    root.querySelectorAll("[data-flow]").forEach((element) => {
-      const active = element.dataset.flow === "drain" ? draining : element.dataset.flow === "group" ? brewing || draining : brewing;
-      element.setAttribute("opacity", element.classList.contains("flow-dashes") ? active ? 1 : 0 : active ? 1 : .25);
-    });
-    root.querySelector("[data-valve-mark]").setAttribute("stroke", brewing ? "#f1c581" : "#b4c4ae");
-    root.querySelectorAll(".flow-dashes").forEach((element) => element.setAttribute("stroke-dashoffset", reduced.matches ? "0" : String(time * (draining && element.dataset.flow === "group" ? 34 : -34))));
+    for (const { selector, attributes } of frameState(projection, time, reduced.matches)) {
+      root.querySelectorAll(selector).forEach((element) => {
+        for (const [name, value] of Object.entries(attributes)) element.setAttribute(name, String(value));
+      });
+    }
     root.querySelector("[data-pump-value]").textContent = stage.pump;
     root.querySelector("[data-heater-value]").textContent = stage.heater;
     root.querySelector("[data-valve-value]").textContent = stage.valve;
@@ -306,7 +266,7 @@ function runtime(projection) {
 }
 
 function page(figure, license) {
-  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>Espresso machine · Cutaway</title><meta name="description" content="Follow water through an espresso machine: reservoir, pump, brew boiler, valve, group head and coffee puck."><style>${CSS}</style></head><body><!--${license.replaceAll("--", "—")}--><main><header><h1>From reservoir to espresso</h1><p>Follow the water through a pump-driven espresso machine. Step through the cycle, then select a part to see what it does.</p></header><div class="drawing"><span class="drawing-label">Brew circuit</span>${figure}<span class="cut-note">Casing and boiler wall cut away</span></div><section class="controls" aria-label="Espresso machine controls"><div class="controls-row"><button type="button" data-play>Play cycle</button><button type="button" data-next>Step</button><button type="button" data-reset>Reset</button><div class="stage-control"><label for="espresso-stage">Stage</label><select id="espresso-stage" data-stage aria-label="Choose a stage"><option>Cold</option><option>Heating</option><option>Ready</option><option>Brewing</option><option>Finished</option></select></div></div><div class="scrub-label"><label for="espresso-progress">Cycle progress</label><span data-phase-label>Cold</span></div><input id="espresso-progress" data-progress type="range" min="0" max="1000" value="0" step="1" aria-label="Move through the brew cycle"><dl class="metrics"><div><dt>Pump</dt><dd data-pump-value>Off</dd></div><div><dt>Heater</dt><dd data-heater-value>Off</dd></div><div><dt>Brew valve</dt><dd data-valve-value>To drain</dd></div></dl><p class="caption" data-caption>The reservoir and brew boiler are already full. The pump is off, and the valve closes the boiler outlet while connecting the group to the drip tray.</p><p class="sr-only" aria-live="polite" data-announcement></p></section><div class="parts" role="group" aria-label="Inspect a part">${[["reservoir", "Reservoir"], ["pump", "Pump"], ["boiler", "Boiler"], ["valve", "Brew valve"], ["group", "Group & basket"]].map(([id, label]) => `<button type="button" data-inspect="${id}" aria-pressed="false">${label}</button>`).join("")}</div><p class="part-description" data-part-description aria-live="polite">Select a part above to read about its job.</p><section class="notes"><div><h2>About this model</h2><p>This generic brew circuit starts with a full boiler and uses shortened heating and brewing stages. It doesn’t calculate temperature, pressure, or flow.</p><p>The drawing omits the steam circuit, pressure bypass, heat loss, and water retained by the coffee.</p></div><div><h2>Read more</h2><ul><li><a href="https://nz.lamarzocco.com/news/blog/what-is-a-solenoid-valve/" target="_blank" rel="noopener noreferrer">La Marzocco: how the solenoid valve works</a></li><li><a href="https://www.lamarzoccousa.com/news/blog/dual-boiler-espresso-machines-are-consistent/" target="_blank" rel="noopener noreferrer">La Marzocco: brew boilers and temperature</a></li></ul></div></section><footer>Made with <a href="https://github.com/abhay/cutaway" target="_blank" rel="noopener noreferrer">Cutaway</a>, built on <a href="https://github.com/wheresryan22/anatomy" target="_blank" rel="noopener noreferrer">Anatomy by Ryan</a>. MIT licenses are included in this file.</footer></main><script>(${runtime.toString()})(${JSON.stringify(P)});</script></body></html>`;
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><title>Espresso machine · Cutaway</title><meta name="description" content="Follow water through an espresso machine: reservoir, pump, brew boiler, valve, group head and coffee puck."><style>${CSS}</style></head><body><!--${license.replaceAll("--", "—")}--><main><header><h1>From reservoir to espresso</h1><p>Follow the water through a pump-driven espresso machine. Step through the cycle, then select a part to see what it does.</p></header><div class="drawing"><span class="drawing-label">Brew circuit</span>${figure}<span class="cut-note">Casing and boiler wall cut away</span></div><section class="controls" aria-label="Espresso machine controls"><div class="controls-row"><button type="button" data-play>Play cycle</button><button type="button" data-next>Step</button><button type="button" data-reset>Reset</button><div class="stage-control"><label for="espresso-stage">Stage</label><select id="espresso-stage" data-stage aria-label="Choose a stage"><option>Cold</option><option>Heating</option><option>Ready</option><option>Brewing</option><option>Finished</option></select></div></div><div class="scrub-label"><label for="espresso-progress">Cycle progress</label><span data-phase-label>Cold</span></div><input id="espresso-progress" data-progress type="range" min="0" max="1000" value="0" step="1" aria-label="Move through the brew cycle"><dl class="metrics"><div><dt>Pump</dt><dd data-pump-value>Off</dd></div><div><dt>Heater</dt><dd data-heater-value>Off</dd></div><div><dt>Brew valve</dt><dd data-valve-value>To drain</dd></div></dl><p class="caption" data-caption>The reservoir and brew boiler are already full. The pump is off, and the valve closes the boiler outlet while connecting the group to the drip tray.</p><p class="sr-only" aria-live="polite" data-announcement></p></section><div class="parts" role="group" aria-label="Inspect a part">${[["reservoir", "Reservoir"], ["pump", "Pump"], ["boiler", "Boiler"], ["valve", "Brew valve"], ["group", "Group & basket"]].map(([id, label]) => `<button type="button" data-inspect="${id}" aria-pressed="false">${label}</button>`).join("")}</div><p class="part-description" data-part-description aria-live="polite">Select a part above to read about its job.</p><section class="notes"><div><h2>About this model</h2><p>This generic brew circuit starts with a full boiler and uses shortened heating and brewing stages. It doesn’t calculate temperature, pressure, or flow.</p><p>The drawing omits the steam circuit, pressure bypass, heat loss, and water retained by the coffee.</p></div><div><h2>Read more</h2><ul><li><a href="https://nz.lamarzocco.com/news/blog/what-is-a-solenoid-valve/" target="_blank" rel="noopener noreferrer">La Marzocco: how the solenoid valve works</a></li><li><a href="https://www.lamarzoccousa.com/news/blog/dual-boiler-espresso-machines-are-consistent/" target="_blank" rel="noopener noreferrer">La Marzocco: brew boilers and temperature</a></li></ul></div></section><footer>Made with <a href="https://github.com/abhay/cutaway" target="_blank" rel="noopener noreferrer">Cutaway</a>, built on <a href="https://github.com/wheresryan22/anatomy" target="_blank" rel="noopener noreferrer">Anatomy by Ryan</a>. MIT licenses are included in this file.</footer></main><script>(${runtime.toString()})(${JSON.stringify(P)},${JSON.stringify(stages)},${JSON.stringify(parts)},${espressoFrame.toString()});</script></body></html>`;
 }
 
 export async function build(outputDirectory) {

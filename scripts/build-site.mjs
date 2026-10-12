@@ -1,12 +1,19 @@
 import { createHash } from "node:crypto";
-import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { hardwareTopics, hardwareArtifacts } from "../site/catalog.mjs";
+import { buildApp } from "./build-app.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const source = join(root, "site");
 const output = join(root, "dist/site");
+const walkthrough = join(root, "tmp/review/walkthrough.mp4");
+const hasWalkthrough = existsSync(walkthrough);
+if (hasWalkthrough) {
+  const file = statSync(walkthrough);
+  if (!file.isFile() || file.size > 25 * 1024 * 1024) throw new Error("The review video must be a file no larger than 25 MiB for Cloudflare Pages.");
+}
 const { version } = JSON.parse(readFileSync(join(root, "plugin.json"), "utf8"));
 const release = join(root, "dist/releases", version);
 const checksums = readFileSync(join(release, "SHA256SUMS"), "utf8");
@@ -37,7 +44,11 @@ rmSync(output, { recursive: true, force: true });
 for (const directory of ["downloads", "examples"]) mkdirSync(join(output, directory), { recursive: true });
 writeFileSync(join(output, "index.html"), html);
 writeFileSync(join(output, "app.js"), `/*\n${licenses.replace(/\*\//g, "* /")}\n*/\n${await bundle.outputs[0].text()}`);
-for (const path of ["styles.css", "404.html", "social.png"]) cpSync(join(source, path), join(output, path));
+for (const path of ["styles.css", "404.html", "social.png", "support", "privacy", "terms", ".well-known"]) cpSync(join(source, path), join(output, path), { recursive: true });
+if (hasWalkthrough) {
+  mkdirSync(join(output, "review"), { recursive: true });
+  cpSync(walkthrough, join(output, "review/walkthrough.mp4"));
+}
 cpSync(join(root, "assets/icon-dark.svg"), join(output, "icon.svg"));
 for (const filename of downloads) cpSync(join(release, filename), join(output, "downloads", filename));
 writeFileSync(join(output, "downloads/SHA256SUMS"), checksums);
@@ -47,5 +58,6 @@ for (const filename of hardwareArtifacts) {
 writeFileSync(join(output, "credits.txt"), readFileSync(join(root, "THIRD_PARTY.md"), "utf8") + "\n\n" + licenses);
 writeFileSync(join(output, "robots.txt"), "User-agent: *\nAllow: /\nSitemap: https://cutaway.abhay.gg/sitemap.xml\n");
 writeFileSync(join(output, "sitemap.xml"), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://cutaway.abhay.gg/</loc></url></urlset>\n');
-writeFileSync(join(output, "_headers"), "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n/downloads/*\n  Content-Disposition: attachment\n");
-console.log(`Website built at ${output}; release ${version} downloads verified.`);
+writeFileSync(join(output, "_headers"), "/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n/downloads/*\n  Content-Disposition: attachment\n/.well-known/openai-apps-challenge\n  Content-Type: text/plain; charset=utf-8\n  Cache-Control: no-store\n/review/walkthrough.mp4\n  Content-Type: video/mp4\n  Content-Disposition: inline\n  X-Robots-Tag: noindex\n");
+await buildApp(root, output);
+console.log(`Website and MCP server built at ${output}; release ${version} downloads verified.`);

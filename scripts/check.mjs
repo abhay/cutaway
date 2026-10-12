@@ -14,6 +14,13 @@ assert.match(manifest.version, /^\d+\.\d+\.\d+$/);
 assert.ok(manifest.description.trim());
 assert.equal(manifest.version, JSON.parse(readFileSync(join(root, "package.json"), "utf8")).version, "Package and plugin versions must agree");
 const listing = manifest.extensions["com.openai"].interface;
+for (const field of ["websiteURL", "supportURL", "privacyPolicyURL", "termsOfServiceURL"]) {
+  assert.equal(typeof listing[field], "string", `${field} is required for directory submission`);
+  assert.ok(listing[field].length <= 1024, `${field} exceeds the submission URL limit`);
+  const url = new URL(listing[field]);
+  assert.equal(url.protocol, "https:", `${field} must use HTTPS`);
+  assert.ok(!url.username && !url.password, `${field} must not contain credentials`);
+}
 for (const [field, limit] of [["displayName", 30], ["shortDescription", 30], ["longDescription", 4000]]) {
   assert.equal(typeof listing[field], "string", `${field} must be text`);
   assert.ok(listing[field].trim().length > 0 && [...listing[field]].length <= limit, `${field} must contain 1–${limit} characters for public submission`);
@@ -27,6 +34,11 @@ for (const prompt of prompts) {
 }
 assert.equal(new Set(prompts.map((prompt) => prompt.normalize("NFKC").trim().replace(/\s+/g, " "))).size, prompts.length, "Starter prompts must be unique");
 const resources = new Set(packageFiles(root));
+const mcp = JSON.parse(readFileSync(join(root, "mcp.json"), "utf8"));
+assert.equal(mcp.$schema, "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json");
+assert.equal(mcp.mcpServers.cutaway.type, "streamable-http");
+assert.equal(mcp.mcpServers.cutaway.url, new URL("/mcp", listing.websiteURL).href);
+assert.equal(mcp.mcpServers.cutaway.extensions["com.openai"].auth.type, "none");
 for (const field of ["logo", "logoDark", "composerIcon", "composerIconDark"]) {
   const path = listing[field];
   if (path === undefined && field.endsWith("Dark")) continue;

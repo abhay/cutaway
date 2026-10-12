@@ -7,7 +7,7 @@ import { packageFiles } from "./files.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 execFileSync("bun", ["run", "check"], { cwd: root, stdio: "inherit" });
-const { name, version } = JSON.parse(readFileSync(join(root, "plugin.json"), "utf8"));
+const { name, version, extensions } = JSON.parse(readFileSync(join(root, "plugin.json"), "utf8"));
 const paths = packageFiles(root);
 const stage = mkdtempSync(join(tmpdir(), "cutaway-package-"));
 const dist = join(root, "dist");
@@ -32,7 +32,7 @@ try {
       name,
       source: { source: "local", path: `./plugins/${name}` },
       policy: { installation: "AVAILABLE", authentication: "ON_INSTALL" },
-      category: "Productivity",
+      category: extensions["com.openai"].interface.category,
     }],
   }, null, 2) + "\n");
 

@@ -31,3 +31,9 @@ The adaptation uses `iso-glow/assets/gallery.html`, SHA-256 `c1821987bea64207d12
 Cutaway gives each figure its own filter IDs and styles, bounds filters to the viewBox, and validates palette, theme, and style choices. UI colors stay readable independently of the drawing's bright accents, and the model determines which parts light up.
 
 Palette controls use native selects without saving preferences. The adaptation omits the upstream external font, gallery runtime, automatic demos, parent-page access, and 3D template/CDN imports. Anatomy draws the geometry; iso-glow supplies the optional lighting.
+
+## MCP server dependencies
+
+The hosted server uses the [Model Context Protocol TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk) and [Zod](https://github.com/colinhacks/zod), both under MIT licenses. Their versions and transitive dependencies are pinned in `bun.lock`.
+
+The website build includes the production dependency notices in `server-licenses.txt` and the bundled worker. These dependencies support the server; the interactive cutaways remain self-contained.

@@ -6,7 +6,7 @@
 
 Cutaway is a ChatGPT plugin for learning how machines work. Look inside the GE9X jet engine, follow water through an espresso machine, compare wing designs, or study the pistons and crankshaft in a boxer engine.
 
-Ask for labels, controls, and explanations of the parts. Cutaway uses the file and code tools in your ChatGPT session to produce HTML, SVG drawings, or editable source, without a separate API key.
+Open a finished model, select a component, and move its controls. The plugin returns explanations, source links, and HTML or SVG downloads of the selected view. Its bundled skill can also draw other machines using the file and code tools in your ChatGPT session. Neither path needs a separate API key.
 
 The drawing toolkit and illustration guidance come from [Ryan's (@wheresryan22) Anatomy](https://github.com/wheresryan22/anatomy). Cutaway adapts that work for ChatGPT and adds the plugin, demos, and file delivery instructions.
 
@@ -16,7 +16,7 @@ Public installation is coming soon. Once installed, select **Cutaway** using `@`
 
 Workspace admins can build the [marketplace package](#packaging) and follow the [workspace import instructions](https://learn.chatgpt.com/docs/enterprise/plugin-management). For local development, see the [plugin setup guide](https://developers.openai.com/plugins/build/plugins).
 
-Ask for self-contained HTML, labels, assumptions, and sources. Cutaway returns a downloadable file and shows an inline preview when the host supports one.
+Try “Show the GE9X compressor,” “Extend the wing flaps to 25 degrees,” or “Open the espresso machine while brewing.” The model opens inside compatible ChatGPT clients, with links to open it in a browser or download the selected view. Custom cutaways use the bundled drawing skill.
 
 ## Demos and prompts
 
@@ -77,16 +77,19 @@ The [glow guide](skills/cutaway/glow/guide.md) covers palettes, filters, and how
 
 ## Development
 
-Use Bun and Node.js 22 or newer. Packaging also needs the system `zip` and `unzip` commands. The build and model tests don't require package dependencies.
+Use Bun and Node.js 22 or newer. Packaging also needs the system `zip` and `unzip` commands.
 
 ```sh
+bun install --frozen-lockfile --ignore-scripts
 bun run check
 bun run test
 bun run build:site
 bun run preview:site
 ```
 
-Open `http://127.0.0.1:4322`, or open `dist/site/index.html` directly. The website source is in `site/`; `build:site` also rebuilds the release archives. Host the contents of `dist/site` with a static hosting provider.
+Open `http://127.0.0.1:4322`. The preview serves the website and MCP endpoint at `/mcp`. The website is in `site/`, the ChatGPT bridge in `app/`, and the server in `server/`. `build:site` also rebuilds the release archives.
+
+The output includes a Cloudflare Pages worker. Static hosting serves the demos; the MCP endpoint and selected-view exports need a runtime. Deployment configuration stays local.
 
 To build only the hardware demos:
 
@@ -96,7 +99,15 @@ bun run hardware
 
 Open `dist/hardware/index.html`. Each demo has a self-contained HTML file and a standalone SVG, with source in `site/hardware/`.
 
-With JSDOM available, `bun run check:site` and `bun run check:hardware` check the generated pages and controls. Check layout and motion in a browser after changing drawings or controls.
+After building, run `bun run check:site`, `bun run check:hardware`, and `bun run check:mcp`. These check links, controls, MCP requests, view exports, and the host bridge. Check layout and motion in a browser after changing drawings or controls. Local checks don’t establish that ChatGPT or Cloudflare has run the build.
+
+## MCP service
+
+The service exposes `list_cutaways`, `open_ge9x`, `open_wing`, `open_espresso`, and `open_boxer`. Each open tool accepts settings for its model and returns a view, an explanation, limitations, sources, and HTML/SVG export links. It provides public educational content without authentication, accounts, saved sessions, or an external model API.
+
+The UI uses the MCP Apps bridge. Controls run locally; “Discuss this view” sends the current settings to the conversation. Downloads preserve the selected state and the applicable license notices. All animation starts paused.
+
+For a development connection, use a reachable HTTPS endpoint ending in `/mcp` and no authentication. See OpenAI’s [connection instructions](https://developers.openai.com/plugins/build/app-quickstart). Public directory installation is pending.
 
 ## Packaging
 
@@ -104,7 +115,7 @@ With JSDOM available, `bun run check:site` and `bun run check:hardware` check th
 bun run package
 ```
 
-This creates `dist/cutaway-<version>.zip` and `dist/workspace-marketplace/`, using the version in [plugin.json](plugin.json). The plugin contains the drawing toolkit and generation instructions. The interactive hardware demos ship separately.
+This creates `dist/cutaway-<version>.zip` and `dist/workspace-marketplace/`, using the version in [plugin.json](plugin.json). The plugin contains the drawing toolkit, generation instructions, and remote MCP connection in [mcp.json](mcp.json). The server deploys with the website; the offline demos also ship separately.
 
 For workspace import, copy the contents of `dist/workspace-marketplace/` into a GitHub repository, preserving the hidden `.agents` directory. Reimport or reinstall the package after rebuilding to use the changes.
 

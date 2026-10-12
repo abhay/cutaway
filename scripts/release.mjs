@@ -18,7 +18,9 @@ for (const task of ["test", "examples", "hardware", "package"]) {
 
 rmSync(source, { recursive: true, force: true });
 mkdirSync(source, { recursive: true });
-const sourcePaths = [...packageFiles(root), "package.json", ".gitignore",
+const sourcePaths = [...packageFiles(root), "package.json", "bun.lock", ".gitignore",
+  ...filesBelow(join(root, "server")).map((path) => `server/${path}`),
+  ...filesBelow(join(root, "app")).map((path) => `app/${path}`),
   ...filesBelow(join(root, "scripts")).map((path) => `scripts/${path}`),
   ...filesBelow(join(root, "tests")).map((path) => `tests/${path}`),
   ...filesBelow(join(root, "site")).map((path) => `site/${path}`),

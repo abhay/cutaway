@@ -17,6 +17,10 @@ User instructions take precedence over these defaults. Resolve the paths below r
 
 ## Deliver in ChatGPT
 
+For an existing GE9X, wing, espresso, or boxer model, use the connected `open_ge9x`, `open_wing`, `open_espresso`, or `open_boxer` tool when it fits the request. Supply the requested component or control settings. These tools return the interactive view, source links, limitations, and downloads; don't rebuild the same model merely to display it. `list_cutaways` describes the available controls.
+
+Use the drawing workflow below for other machines, changes to a model's geometry or styling, or when the hosted tools aren't available. Keep the hosted models' illustrative dimensions and omitted systems clear when explaining them.
+
 Default to a light-theme, self-contained interactive HTML file with inline SVG, CSS, and JavaScript. Honor a request for static SVG, React, a different theme, or a simpler figure. Use the host's available file and execution tools; no MCP server, external model API, or network request is required to generate a figure.
 
 Create a writable project outside the installed plugin. With a JavaScript runtime available, use:
